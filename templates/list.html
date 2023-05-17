@@ -19,6 +19,8 @@
                     <td>{{ shop.name }}</td>
                     <td>{{ shop.latitude }}</td>
                     <td>{{ shop.longitude }}</td>
+                    {% if user.is_authenticated %}<td><a href="{% url 'shop_update' shop.pk %}">Update</a></td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
