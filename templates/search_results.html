@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="mt-4">Shop Search Results</h1>
+        
+        {% if shops %}
+            <table class="table table-striped mt-4">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for shop in shops %}
+                    <tr>
+                        <td>{{ shop.name }}</td>
+                        <td>{{ shop.latitude }}</td>
+                        <td>{{ shop.longitude }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="mt-4 text-center">No shops found.</p>
+        {% endif %}
+    </div>
+{% endblock content %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Shop List{% endblock %}
+
+{% block content %}
+        <div>
+            <h1 class="mt-4">Shop List</h1>
+        <table class="table table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for shop in shops %}
+                <tr>
+                    <td>{{ shop.name }}</td>
+                    <td>{{ shop.latitude }}</td>
+                    <td>{{ shop.longitude }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% endblock content %}
+ 
