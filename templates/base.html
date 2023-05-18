@@ -28,6 +28,19 @@
                     
                         <a class="nav-link" href="{% url 'shop_create' %}">Add Shop</a>
                     </li>
+
+                    <li class="nav-item">
+                    
+                       {% if not user.is_authenticated %}
+                       <a class="nav-link" href="{% url 'signup' %}">Signup</a>
+                       
+                    </li>
+
+                    <li class="nav-item">
+                        
+                        <a class="nav-link" href="{% url 'login' %}">Log in</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </nav>
