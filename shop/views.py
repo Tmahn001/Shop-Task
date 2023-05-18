@@ -78,7 +78,7 @@ def shop_delete(request, pk):
     shop.delete()
     return redirect('shop_list')
 
-def shop_search(request):
+'''def shop_search(request):
     if request.method == 'POST':
         latitude = float(request.POST.get('latitude'))
         longitude = float(request.POST.get('longitude'))
@@ -97,6 +97,32 @@ def shop_search(request):
 
         return render(request, 'search_results.html', {'shops': nearby_shops})
 
-    return render(request, 'search.html')
+    return render(request, 'search.html')'''
+
+
+def shop_search(request):
+    if request.method == 'POST':
+        search_type = request.POST.get('search_type')
+
+        if search_type == 'name':
+            shop_name = request.POST.get('shop_name')
+            shops = Shop.objects.filter(name__icontains=shop_name)
+            return render(request, 'search_results.html', {'shops': shops})
+        
+        elif search_type == 'distance':
+            distance_km = float(request.POST.get('distance'))
+
+            user_location = (request.user.latitude, request.user.longitude)  # Assuming the user's latitude and longitude are stored in request.user
+            shops = Shop.objects.filter(
+                Q(latitude__isnull=False) & Q(longitude__isnull=False)
+            )
+
+            nearby_shops = []
+            for shop in shops:
+                shop_location = (float(shop.latitude), float(shop.longitude))
+                if distance(user_location, shop_location).km <= distance_km:
+                    nearby_shops.append(shop)
+
+            return render(request, 'search_results.html', {'shops': nearby_shops})
 
 
