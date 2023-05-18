@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from django.db.models import Q
-from geopy.distance import distance
+#from geopy.distance import distance
 from .models import Shop
 from .forms import ShopForm
 from django.contrib.auth.decorators import login_required
 from math import radians, cos, sin, asin, sqrt
-from ipware import get_client_ip
+#from ipware import get_client_ip
 from django.conf import settings
 from pathlib import Path
 
