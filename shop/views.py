@@ -12,9 +12,9 @@ from pathlib import Path
 
 
 # Create your views here.
-@login_required
+#@login_required
 def shop_list(request):
-    shops = Shop.objects.filter(user=request.user).all()
+    shops = Shop.objects.all()
 
     user_latitude = request.GET.get('lat')
     user_longitude = request.GET.get('lng')
