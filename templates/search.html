@@ -8,18 +8,37 @@
         <form method="post" action="{% url 'shop_search' %}" class="mt-4">
             {% csrf_token %}
             <div class="form-group">
-                <label for="latitude">Latitude:</label>
-                <input type="text" name="latitude" id="latitude" class="form-control" required>
+                <label for="search_type">Search By:</label>
+                <select name="search_type" id="search_type" class="form-control" required>
+                    <option value="name">Name</option>
+                    <option value="distance">Distance</option>
+                </select>
             </div>
-            <div class="form-group">
-                <label for="longitude">Longitude:</label>
-                <input type="text" name="longitude" id="longitude" class="form-control" required>
+            <div class="form-group" id="name_group" style="display: none;">
+                <label for="shop_name">Shop Name:</label>
+                <input type="text" name="shop_name" id="shop_name" class="form-control">
             </div>
-            <div class="form-group">
+            <div class="form-group" id="distance_group" style="display: none;">
                 <label for="distance">Distance (in kilometers):</label>
-                <input type="number" name="distance" id="distance" class="form-control" required>
+                <input type="number" name="distance" id="distance" class="form-control">
             </div>
             <button type="submit" class="btn btn-primary">Search</button>
         </form>
     </div>
+
+    <script>
+        const searchTypeSelect = document.getElementById('search_type');
+        const nameGroup = document.getElementById('name_group');
+        const distanceGroup = document.getElementById('distance_group');
+        
+        searchTypeSelect.addEventListener('change', function() {
+            if (this.value === 'name') {
+                nameGroup.style.display = 'block';
+                distanceGroup.style.display = 'none';
+            } else if (this.value === 'distance') {
+                nameGroup.style.display = 'none';
+                distanceGroup.style.display = 'block';
+            }
+        });
+    </script>
 {% endblock content %}
