@@ -21,8 +21,8 @@ def shop_list(request):
 
     if user_latitude is not None and user_longitude is not None:
         try:
-            user_latitude = float(round(user_latitude,2))
-            user_longitude = float(round(user_longitude,2))
+            user_latitude = float(user_latitude)
+            user_longitude = float(user_longitude)
         except ValueError:
             user_latitude = None
             user_longitude = None
