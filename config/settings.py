@@ -16,6 +16,8 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Specify the path to the GeoIP database file
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -39,8 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
-    'shop'
-]
+    'shop',
+    ]
+  
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 MIDDLEWARE = [
@@ -128,3 +131,5 @@ STATIC_ROOT =os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CSRF_TRUSTED_ORIGINS = ['https://*.web-production-467b.up.railway.app','https://*.127.0.0.1']
+LOGIN_REDIRECT_URL = 'shop_list'
+LOGOUT_REDIRECT_URL = 'login'

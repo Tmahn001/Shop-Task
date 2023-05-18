@@ -3,28 +3,54 @@
 {% block title %}Shop List{% endblock %}
 
 {% block content %}
-        <div>
-            <h1 class="mt-4">Shop List</h1>
-        <table class="table table-striped mt-4">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Latitude</th>
-                    <th>Longitude</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for shop in shops %}
-                <tr>
-                    <td>{{ shop.name }}</td>
-                    <td>{{ shop.latitude }}</td>
-                    <td>{{ shop.longitude }}</td>
-                    {% if user.is_authenticated %}<td><a href="{% url 'shop_update' shop.pk %}">Update</a></td>
+<div>
+  <h1 class="mt-4">Shop List</h1>
+  <table class="table table-striped mt-4">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Latitude</th>
+        <th>Longitude</th>
+        <th>Distance</th>  <!-- Add a new column for distance -->
+      </tr>
+    </thead>
+    <tbody>
+      {% for shop in shops %}
+      <tr>
+        <td>{{ shop.name }}</td>
+        <td>{{ shop.latitude }}</td>
+        <td>{{ shop.longitude }}</td>
+        <td>{{ shop.distance }} Km</td>  <!-- Display the distance value -->
+        {% if user.is_authenticated %}<td><a href="{% url 'shop_update' shop.pk %}">Update</a></td>
+        <td><a href="{% url 'shop_delete' shop.pk %}">Delete</a></td>
                     {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        </div>
-        {% endblock content %}
- 
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+    function getUserLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+      }
+    }
+  
+    function showPosition(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      const urlParams = new URLSearchParams(window.location.search);
+      const hasLocationParams = urlParams.has('lat') && urlParams.has('lng');
+  
+      if (!hasLocationParams) {
+        window.location.href = '/shop-list/?lat=' + latitude + '&lng=' + longitude;
+      }
+    }
+  
+    getUserLocation();
+  </script>
+  
+
+{% endblock content %}
+
