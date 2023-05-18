@@ -16,18 +16,24 @@ from pathlib import Path
 def shop_list(request):
     shops = Shop.objects.filter(user=request.user).all()
 
-    user_latitude = float(request.GET.get('lat'))
-    user_longitude = float(request.GET.get('lng'))
+    user_latitude = request.GET.get('lat')
+    user_longitude = request.GET.get('lng')
+
+    if user_latitude is not None and user_longitude is not None:
+        try:
+            user_latitude = float(user_latitude)
+            user_longitude = float(user_longitude)
+        except ValueError:
+            user_latitude = None
+            user_longitude = None
 
     for shop in shops:
-        if user_latitude and user_longitude:
+        if user_latitude is not None and user_longitude is not None:
             shop.distance = calculate_distance(user_latitude, user_longitude, shop.latitude, shop.longitude)
         else:
             shop.distance = None  # Set distance as None if user's location is not available
 
     return render(request, 'list.html', {'shops': shops})
-
-
 
 
 
