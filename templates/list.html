@@ -1,3 +1,4 @@
+<!-- shop_list.html -->
 {% extends 'base.html' %}
 
 {% block title %}Shop List{% endblock %}
@@ -11,46 +12,54 @@
         <th>Name</th>
         <th>Latitude</th>
         <th>Longitude</th>
-        <th>Distance</th>  <!-- Add a new column for distance -->
+        <th>Distance</th>
+        {% if user.is_authenticated %}
+          <th>Actions</th>  <!-- Add a new column for actions -->
+        {% endif %}
       </tr>
     </thead>
     <tbody>
       {% for shop in shops %}
-      <tr>
-        <td>{{ shop.name }}</td>
-        <td>{{ shop.latitude }}</td>
-        <td>{{ shop.longitude }}</td>
-        <td>{{ shop.distance|floatformat:2 }} Km</td>  <!-- Display the distance value -->
-        {% if user.is_authenticated %}<td><a href="{% url 'shop_update' shop.pk %}">Update</a></td>
-        <td><a href="{% url 'shop_delete' shop.pk %}">Delete</a></td>
-                    {% endif %}
-      </tr>
+        <tr>
+          <td>{{ shop.name }}</td>
+          <td>{{ shop.latitude }}</td>
+          <td>{{ shop.longitude }}</td>
+          <td>{{ shop.distance|floatformat:2 }} Km</td>
+          {% if user.is_authenticated and shop.user == user %}
+            <td>
+              <a href="{% url 'shop_update' shop.pk %}">Update</a>
+              <a href="{% url 'shop_delete' shop.pk %}">Delete</a>
+            </td>
+          {% else %}
+          <td>
+            <a href="">Update</a>
+            <a href="">Delete</a>
+          </td>
+          {% endif %}
+        </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
 
 <script>
-    function getUserLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition);
-      }
+  function getUserLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
     }
-  
-    function showPosition(position) {
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-      const urlParams = new URLSearchParams(window.location.search);
-      const hasLocationParams = urlParams.has('lat') && urlParams.has('lng');
-  
-      if (!hasLocationParams) {
-        window.location.href = '/?lat=' + latitude + '&lng=' + longitude;
-      }
-    }
-  
-    getUserLocation();
-  </script>
-  
+  }
 
+  function showPosition(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasLocationParams = urlParams.has('lat') && urlParams.has('lng');
+
+    if (!hasLocationParams) {
+      window.location.href = '/?lat=' + latitude + '&lng=' + longitude;
+    }
+  }
+
+  getUserLocation();
+</script>
 {% endblock content %}
-

@@ -4,10 +4,13 @@ from django.db.models import Q
 from .models import Shop
 from .forms import ShopForm
 from django.contrib.auth.decorators import login_required
+import math
 from math import radians, cos, sin, asin, sqrt
 #from ipware import get_client_ip
 from django.conf import settings
-from pathlib import Path
+
+
+
 
 
 
@@ -78,51 +81,66 @@ def shop_delete(request, pk):
     shop.delete()
     return redirect('shop_list')
 
-'''def shop_search(request):
-    if request.method == 'POST':
-        latitude = float(request.POST.get('latitude'))
-        longitude = float(request.POST.get('longitude'))
-        distance_km = float(request.POST.get('distance'))
 
-        user_location = (latitude, longitude)
-        shops = Shop.objects.filter(
-            Q(latitude__isnull=False) & Q(longitude__isnull=False)
-        )
+def calculate_distance(lat1, lon1, lat2, lon2):
+    lat1_rad = math.radians(float(lat1))
+    lon1_rad = math.radians(float(lon1))
+    lat2_rad = math.radians(float(lat2))
+    lon2_rad = math.radians(float(lon2))
 
-        nearby_shops = []
-        for shop in shops:
-            shop_location = (float(shop.latitude), float(shop.longitude))
-            if distance(user_location, shop_location).km <= distance_km:
-                nearby_shops.append(shop)
+    dlon = lon2_rad - lon1_rad
+    dlat = lat2_rad - lat1_rad
+    a = math.sin(dlat/2)**2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon/2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    distance = 6371 * c
 
-        return render(request, 'search_results.html', {'shops': nearby_shops})
+    return distance
+# views.py
+def get_nearby_shops(distance_km, user_latitude, user_longitude, shop_name=None):
+    shops = Shop.objects.filter(latitude__isnull=False, longitude__isnull=False)
+    nearby_shops = []
 
-    return render(request, 'search.html')'''
+    for shop in shops:
+        shop_latitude = float(shop.latitude)
+        shop_longitude = float(shop.longitude)
+
+        distance = calculate_distance(user_latitude, user_longitude, shop_latitude, shop_longitude)
+
+        if distance_km and distance > distance_km:
+            continue  # Skip the shop if distance is specified and it exceeds the distance criteria
+        if shop_name and shop_name.lower() not in shop.name.lower():
+            continue  # Skip the shop if name is specified and it doesn't match the search criteria
+            
+        nearby_shops.append(shop)
+
+    return nearby_shops
 
 
 def shop_search(request):
     if request.method == 'POST':
-        search_type = request.POST.get('search_type')
+        distance_km = request.POST.get('distance')
+        shop_name = request.POST.get('shop_name')
 
-        if search_type == 'name':
-            shop_name = request.POST.get('shop_name')
-            shops = Shop.objects.filter(name__icontains=shop_name)
-            return render(request, 'search_results.html', {'shops': shops})
-        
-        elif search_type == 'distance':
-            distance_km = float(request.POST.get('distance'))
+        if not distance_km and not shop_name:
+            error_message = 'Distance or shop name is required.'
+            return render(request, 'error.html', {'error_message': error_message})
 
-            user_location = (request.user.latitude, request.user.longitude)  # Assuming the user's latitude and longitude are stored in request.user
-            shops = Shop.objects.filter(
-                Q(latitude__isnull=False) & Q(longitude__isnull=False)
-            )
+        try:
+            distance_km = float(distance_km) if distance_km else None
+        except ValueError:
+            error_message = 'Invalid distance value.'
+            return render(request, 'error.html', {'error_message': error_message})
 
-            nearby_shops = []
-            for shop in shops:
-                shop_location = (float(shop.latitude), float(shop.longitude))
-                if distance(user_location, shop_location).km <= distance_km:
-                    nearby_shops.append(shop)
+        user_latitude = request.POST.get('lat')
+        user_longitude = request.POST.get('lng')
 
-            return render(request, 'search_results.html', {'shops': nearby_shops})
+        if not user_latitude or not user_longitude:
+            error_message = 'User location is missing.'
+            return render(request, 'error.html', {'error_message': error_message})
 
+        nearby_shops = get_nearby_shops(distance_km, user_latitude, user_longitude, shop_name)
+        print(nearby_shops)
 
+        return render(request, 'search_results.html', {'shops': nearby_shops})
+
+    return render(request, 'search.html')
